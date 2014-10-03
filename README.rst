@@ -3,8 +3,8 @@
 
 |
 
-.. image:: https://travis-ci.org/AVnu/Open-AVB.svg?branch=open-avb-next
-   :target: https://travis-ci.org/AVnu/Open-AVB
+.. image:: https://travis-ci.org/pinealservo/Open-AVB.svg?branch=open-avb-next
+   :target: https://travis-ci.org/pinealservo/Open-AVB
 
 Open AVB
 ========
