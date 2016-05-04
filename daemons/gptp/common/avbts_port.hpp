@@ -167,9 +167,9 @@ public:
 	 * @brief  Gets the clockIdentity value
 	 * @return A copy of Clock identity value.
 	 */
-    ClockIdentity getClockIdentity( void ) {
-        return this->clock_id;
-    }
+	ClockIdentity getClockIdentity( void ) {
+		return this->clock_id;
+	}
 
 	/**
 	 * @brief  Gets the port number following the network byte order, i.e. Big-Endian.
@@ -207,7 +207,7 @@ public:
 typedef std::map < PortIdentity, LinkLayerAddress > IdentityMap_t;
 
 /**
- * Structure for initializing of the IEEE1588 class
+ * Structure for initializing the IEEE1588 class
  */
 typedef struct {
 	/* clock IEEE1588Clock instance */
@@ -332,7 +332,7 @@ class IEEE1588Port {
 	/* Signed value allows this to be negative result because of inaccurate
 	   timestamp */
 	int64_t one_way_delay;
-    int64_t neighbor_prop_delay_thresh;
+	int64_t neighbor_prop_delay_thresh;
 
 	/*Sync threshold*/
 	unsigned int sync_receipt_thresh;
@@ -345,30 +345,30 @@ class IEEE1588Port {
 
 	bool asCapable;
 
-  /* Automotive Profile : Static variables */
-  // port_state : already defined as port_state
-  bool isGM;
-  bool testMode;
-  // asCapable : already defined as asCapable
-  char initialLogPdelayReqInterval;
-  char initialLogSyncInterval;
-  char operLogPdelayReqInterval;
-  char operLogSyncInterval;
-  bool automotive_profile;
+	/* Automotive Profile : Static variables */
+	// port_state : already defined as port_state
+	bool isGM;
+	bool testMode;
+	// asCapable : already defined as asCapable
+	char initialLogPdelayReqInterval;
+	char initialLogSyncInterval;
+	char operLogPdelayReqInterval;
+	char operLogSyncInterval;
+	bool automotive_profile;
 
-  // Test Status variables
-  uint32_t linkUpCount;
-  uint32_t linkDownCount;
-  StationState_t stationState;
+	// Test Status variables
+	uint32_t linkUpCount;
+	uint32_t linkDownCount;
+	StationState_t stationState;
 
 
-  /* Automotive Profile : Persistant variables */
-  // neighborPropDelay : defined as one_way_delay ??
-  // rateRatio : Optional and didn't fine this variable. Will proceed without writing it.
-  // neighborRateRatio : defined as _peer_rate_offset ??
+	/* Automotive Profile : Persistant variables */
+	// neighborPropDelay : defined as one_way_delay ??
+	// rateRatio : Optional and didn't fine this variable. Will proceed without writing it.
+	// neighborRateRatio : defined as _peer_rate_offset ??
 
-  // Automotive Profile AVB SYNC state indicator. > 0 will inditate valid AVB SYNC state
-  uint32_t avbSyncState;
+	// Automotive Profile AVB SYNC state indicator. > 0 will inditate valid AVB SYNC state
+	uint32_t avbSyncState;
 
 	int32_t *rate_offset_array;
 	uint32_t rate_offset_array_size;
@@ -386,7 +386,7 @@ class IEEE1588Port {
 	PTPMessageAnnounce *qualified_announce;
 
 	uint16_t announce_sequence_id;
-  uint16_t signal_sequence_id;
+	uint16_t signal_sequence_id;
 	uint16_t sync_sequence_id;
 
 	uint16_t pdelay_sequence_id;
@@ -411,9 +411,9 @@ class IEEE1588Port {
 	OSLock *pdelay_rx_lock;
 	OSLock *port_tx_lock;
 
-  OSLock *syncIntervalTimerLock;
-  OSLock *announceIntervalTimerLock;
-  OSLock *pDelayIntervalTimerLock;
+	OSLock *syncIntervalTimerLock;
+	OSLock *announceIntervalTimerLock;
+	OSLock *pDelayIntervalTimerLock;
 
 	OSThreadFactory *thread_factory;
 	OSTimerFactory *timer_factory;
@@ -431,11 +431,11 @@ class IEEE1588Port {
 
 	bool pdelay_started;
 	bool pdelay_halted;
-  bool sync_rate_interval_timer_started;
+	bool sync_rate_interval_timer_started;
 
-  uint16_t lastGmTimeBaseIndicator;
+	uint16_t lastGmTimeBaseIndicator;
 
-  IEEE1588PortCounters_t counters;
+	IEEE1588PortCounters_t counters;
 
  public:
 	bool forceSlave;	//!< Forces port to be slave. Added for testing.
@@ -514,12 +514,12 @@ class IEEE1588Port {
 		return pdelay_halted;
 	}
 
-  /**
-   * @brief  Starts Sync Rate Interval event timer. Used for the
-   *         Automotive Profile.
-   * @return void
-   */
-  void startSyncRateIntervalTimer();
+	/**
+	 * @brief  Starts Sync Rate Interval event timer. Used for the
+	 *         Automotive Profile.
+	 * @return void
+	 */
+	void startSyncRateIntervalTimer();
 
 	/**
 	 * @brief  Starts announce event timer
@@ -591,11 +591,11 @@ class IEEE1588Port {
 	 */
 	bool getAsCapable() { return( asCapable ); }
 
-  /**
-   * @brief  Gets the AVnu automotive profile flag
-   * @return automotive_profile flag
-   */
-  bool getAutomotiveProfile() { return( automotive_profile ); }
+	/**
+	 * @brief  Gets the AVnu automotive profile flag
+	 * @return automotive_profile flag
+	 */
+	bool getAutomotiveProfile() { return( automotive_profile ); }
 
 	/**
 	 * Destroys a IEEE1588Port
@@ -686,7 +686,7 @@ class IEEE1588Port {
 	 * @return void
 	 */
 	void sendGeneralPort
-	(uint8_t * buf, int len, MulticastType mcast_type,
+	(uint16_t etherType, uint8_t * buf, int len, MulticastType mcast_type,
 	 PortIdentity * destIdentity);
 
 	/**

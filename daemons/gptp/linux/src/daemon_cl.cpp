@@ -112,8 +112,7 @@ int main(int argc, char **argv)
     bool override_portstate = false;
     PortState port_state;
 
-    int restorefd = -1;
-    void *restoredata = ((void *) -1);
+    char *restoredata = NULL;
     char *restoredataptr = NULL;
     off_t restoredatalength = 0;
     off_t restoredatacount = 0;
@@ -278,10 +277,10 @@ int main(int argc, char **argv)
                 portInit.initialLogSyncInterval = atoi(argv[++i]);
             }
             else if (strcmp(argv[i] + 1, "OPERSYNC") == 0) {
-                portInit.initialLogPdelayReqInterval = atoi(argv[++i]);
+								portInit.operLogSyncInterval = atoi(argv[++i]);
             }
             else if (strcmp(argv[i] + 1, "INITPDELAY") == 0) {
-                portInit.operLogSyncInterval = atoi(argv[++i]);
+                portInit.initialLogPdelayReqInterval = atoi(argv[++i]);
             }
             else if (strcmp(argv[i] + 1, "OPERPDELAY") == 0) {
                 portInit.operLogPdelayReqInterval = atoi(argv[++i]);
@@ -365,7 +364,7 @@ int main(int argc, char **argv)
     portInit.timer_factory = timer_factory;
     portInit.lock_factory = lock_factory;
 
-    pPort = newIEEE1588Port(&portInit);
+    pPort = new IEEE1588Port(&portInit);
     if (!pPort->init_port(phy_delay)) {
       printf("failed to initialize port \n");
       return -1;
@@ -414,7 +413,7 @@ int main(int argc, char **argv)
     if( restoredataptr != NULL ) {
       if( !restorefailed ) {
         restorefailed = !pPort->restoreSerializedState( restoredataptr, &restoredatacount );
-        GPTP_LOG_INFO("Persistent port data restored: asCapable:%d, port_state:%d, one_way_delay:%" PRId64,
+        GPTP_LOG_INFO("Persistent port data restored: asCapable:%d, port_state:%d, one_way_delay:%lld",
                       pPort->getAsCapable(), pPort->getPortState(), pPort->getLinkDelay());
       }
       restoredataptr = ((char *)restoredata) + (restoredatalength - restoredatacount);
