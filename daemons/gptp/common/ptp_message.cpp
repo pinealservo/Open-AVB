@@ -1617,8 +1617,10 @@ void PTPMessagePathDelayRespFollowUp::processMessage(IEEE1588Port * port)
 			port->setAsCapable( true );
 		}
 	}
-    if( !port->setLinkDelay( link_delay ) )
+	if( !port->setLinkDelay( link_delay ) ) {
+		XPTPD_INFO("Link delay %ld beyond neighborPropDelayThresh; not AsCapable", link_delay);
         port->setAsCapable( false );
+	}
 
 	port->setPeerOffset( request_tx_timestamp, remote_req_rx_timestamp );
 

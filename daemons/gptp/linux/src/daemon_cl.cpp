@@ -213,7 +213,7 @@ int main(int argc, char **argv)
                             "command line with A option\n" );
                 }
             }
-            else if( toupper( argv[i][1] ) == 'G' ) {
+            else if( toupper( argv[i][1] ) == 'G' && toupper( argv[i][2] ) != 'M') {
                 if( i+1 < argc ) {
                     ipc_arg = new LinuxIPCArg(argv[++i]);
                 } else {

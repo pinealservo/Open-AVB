@@ -1124,6 +1124,7 @@ void IEEE1588Port::processEvent(Event e)
 		break;
 	case PDELAY_RESP_RECEIPT_TIMEOUT_EXPIRES:
 		if (!automotive_profile) {
+			XPTPD_INFO("PDelay Response Receipt Timeout\n");
 			setAsCapable(false);
 		}
 		pdelay_count = 0;
