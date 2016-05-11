@@ -54,6 +54,8 @@ class GptpIniParser
         {
             /*ptp data set*/
             unsigned char priority1;
+            bool enablePPS;
+            bool syntonize;
 
             /*port data set*/
             unsigned int announceReceiptTimeout;
@@ -63,10 +65,24 @@ class GptpIniParser
             unsigned int seqIdAsCapableThresh;
             uint16_t lostPdelayRespThresh;
             PortState port_state;
+            char initialLogSyncInterval;
+            char operLogSyncInterval;
+            char initialLogPdelayReqInterval;
+            char operLogPdelayReqInterval;
 
             /*ethernet adapter data set*/
             std::string ifname;
             struct phy_delay phyDelay;
+
+            /* automotive data set */
+            bool enableAutomotive;
+            bool enableTestMode;
+            bool isGM;
+
+            /* persistence data set */
+            bool enablePersistence;
+            std::string persistenceFilename;
+
         } gptp_cfg_t;
 
         /*public methods*/

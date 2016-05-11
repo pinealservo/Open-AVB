@@ -83,6 +83,32 @@ int GptpIniParser::iniCallBack(void *user, const char *section, const char *name
                 parser->_config.priority1 = p1;
             }
         }
+        else if ( parseMatch(name, "enablePPS") )
+        {
+            if( parseMatch(value, "true") )
+            {
+                valOK = true;
+                parser->_config.enablePPS = true;
+            }
+            else if( parseMatch(value, "false") )
+            {
+                valOK = true;
+                parser->_config.enablePPS = false;
+            }
+        }
+        else if ( parseMatch(name, "syntonize") )
+        {
+            if( parseMatch(value, "true") )
+            {
+                valOK = true;
+                parser->_config.syntonize = true;
+            }
+            else if( parseMatch(value, "false") )
+            {
+                valOK = true;
+                parser->_config.syntonize = false;
+            }
+        }
     }
     else if( parseMatch(section, "port") )
     {
@@ -190,6 +216,48 @@ int GptpIniParser::iniCallBack(void *user, const char *section, const char *name
             if( *pEnd == '\0' && errno == 0) {
                 valOK = true;
                 parser->_config.phyDelay.mb_rx_phy_delay = phdly;
+            }
+        }
+    }
+    else if( parseMatch(section, "automotive") )
+    {
+        if ( parseMatch(name, "automotiveProfile") )
+        {
+            if( parseMatch(value, "true") )
+            {
+                valOK = true;
+                parser->_config.enableAutomotive = true;
+            }
+            else if( parseMatch(value, "false") )
+            {
+                valOK = true;
+                parser->_config.enableAutomotive = false;
+            }
+        }
+        else if ( parseMatch(name, "enableTestMode") )
+        {
+            if( parseMatch(value, "true") )
+            {
+                valOK = true;
+                parser->_config.enableTestMode = true;
+            }
+            else if( parseMatch(value, "false") )
+            {
+                valOK = true;
+                parser->_config.enableTestMode = false;
+            }
+        }
+        else if ( parseMatch(name, "isGM") )
+        {
+            if( parseMatch(value, "true") )
+            {
+                valOK = true;
+                parser->_config.isGM = true;
+            }
+            else if( parseMatch(value, "false") )
+            {
+                valOK = true;
+                parser->_config.isGM = false;
             }
         }
     }
