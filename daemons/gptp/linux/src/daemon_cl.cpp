@@ -220,14 +220,14 @@ int main(int argc, char **argv)
                     printf( "Must specify group name on the command line\n" );
                 }
             }
-            else if( strcmp(argv[i] + 1,  "P" == 0 ) {
+            else if( strcmp(argv[i] + 1,  "P") == 0 ) {
                 pps = true;
             }
-            else if( strcmp(argv[i] + 1,  "H" == 0 ) {
+            else if( strcmp(argv[i] + 1,  "H") == 0 ) {
                 print_usage( argv[0] );
                 return 0;
             }
-            else if( strcmp(argv[i] + 1,  "R" == 0 ) {
+            else if( strcmp(argv[i] + 1,  "R") == 0 ) {
                 if( i+1 >= argc ) {
                     printf( "Priority 1 value must be specified on "
                             "command line, using default value\n" );
