@@ -88,6 +88,13 @@ uint64_t PLAT_htonll(uint64_t x);
  */
 uint64_t PLAT_ntohll(uint64_t x);
 
+#ifndef _LINUX_TIMEX_H
+/*
+ * linux_hal_generic_adj.cpp includes linux/timex.h, which precludes definition
+ * of time_h, so we can't make this function available there or we will get an
+ * error about time_t not having a type.
+ */
+
 /**
  * @brief  Converts a time_t structure into a tm structure
  * @param[in]  inTime  The time_t to be converted
@@ -95,6 +102,7 @@ uint64_t PLAT_ntohll(uint64_t x);
  * @return  An error code
  */
 int PLAT_localtime(const time_t * inTime, struct tm * outTm);
+#endif
 
 
 #endif
