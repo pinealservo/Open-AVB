@@ -27,7 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <time.h>
+#include <stdint.h>
+#include <platform.hpp>
 
 // MS VC++ 2013 has C++11 but not C11 support, use this to get millisecond resolution
 #include <chrono>
@@ -43,9 +44,9 @@ void gptpLog(const char *tag, const char *path, int line, const char *fmt, ...)
 	std::chrono::system_clock::time_point cNow = std::chrono::system_clock::now();
 	time_t tNow = std::chrono::system_clock::to_time_t(cNow);
 	struct tm tmNow;
-	localtime_r(&tNow, &tmNow);
+	PLAT_localtime(&tNow, &tmNow);
 	std::chrono::system_clock::duration roundNow = cNow - std::chrono::system_clock::from_time_t(tNow);
-	long int millis = std::chrono::duration_cast<std::chrono::microseconds>(roundNow).count();
+	long int millis = (long int) std::chrono::duration_cast<std::chrono::microseconds>(roundNow).count();
 
 	if (path) {
 		fprintf(stderr, "%s: GPTP [%2.2d:%2.2d:%2.2d:%3.3ld] [%s:%u] %s\n",
