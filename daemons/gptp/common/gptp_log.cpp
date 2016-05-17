@@ -46,7 +46,7 @@ void gptpLog(const char *tag, const char *path, int line, const char *fmt, ...)
 	struct tm tmNow;
 	PLAT_localtime(&tNow, &tmNow);
 	std::chrono::system_clock::duration roundNow = cNow - std::chrono::system_clock::from_time_t(tNow);
-	long int millis = (long int) std::chrono::duration_cast<std::chrono::microseconds>(roundNow).count();
+	long int millis = (long int) std::chrono::duration_cast<std::chrono::milliseconds>(roundNow).count();
 
 	if (path) {
 		fprintf(stderr, "%s: GPTP [%2.2d:%2.2d:%2.2d:%3.3ld] [%s:%u] %s\n",
