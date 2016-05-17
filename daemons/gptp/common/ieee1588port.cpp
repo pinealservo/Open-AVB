@@ -1107,7 +1107,9 @@ void IEEE1588Port::processEvent(Event e)
 		break;
 	case FAULT_DETECTED:
 		GPTP_LOG_INFO("Received FAULT_DETECTED event");
-		setAsCapable(false);
+		if (!automotive_profile) {
+			setAsCapable(false);
+		}
 		break;
 	case PDELAY_DEFERRED_PROCESSING:
 		pdelay_rx_lock->lock();
