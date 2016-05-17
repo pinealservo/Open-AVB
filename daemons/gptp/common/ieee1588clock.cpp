@@ -268,7 +268,7 @@ FrequencyRatio IEEE1588Clock::calcLocalSystemClockRateDifference( Timestamp loca
 	unsigned long long inter_local_time;
 	FrequencyRatio ppt_offset;
 
-	GPTP_LOG_INFO( "Calculated local to system clock rate difference" );
+	GPTP_LOG_DEBUG( "Calculated local to system clock rate difference" );
 
 	if( !_local_system_freq_offset_init ) {
 		_prev_system_time = system_time;
@@ -303,7 +303,7 @@ FrequencyRatio IEEE1588Clock::calcMasterLocalClockRateDifference( Timestamp mast
 	unsigned long long inter_master_time;
 	FrequencyRatio ppt_offset;
 
-	GPTP_LOG_INFO( "Calculated master to local clock rate difference" );
+	GPTP_LOG_DEBUG( "Calculated master to local clock rate difference" );
 
 	if( !_master_local_freq_offset_init ) {
 		_prev_sync_time = sync_time;

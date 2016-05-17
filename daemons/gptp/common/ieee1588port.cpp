@@ -421,11 +421,11 @@ void *IEEE1588Port::openPort(IEEE1588Port *port)
 		size_t length = sizeof(buf);
 
 		if ((rrecv = net_iface->nrecv(&remote, buf, length,&get_delay)) == net_succeed) {
-			GPTP_LOG_INFO("Processing network buffer");
+			GPTP_LOG_VERBOSE("Processing network buffer");
 			msg = buildPTPMessage((char *)buf, (int)length, &remote,
 					    this);
 			if (msg != NULL) {
-				GPTP_LOG_INFO("Processing message");
+				GPTP_LOG_VERBOSE("Processing message");
 				msg->processMessage(this);
 				if (msg->garbage()) {
 					delete msg;
@@ -503,7 +503,7 @@ void IEEE1588Port::processEvent(Event e)
 	switch (e) {
 	case POWERUP:
 	case INITIALIZE:
-		GPTP_LOG_INFO("Received POWERUP/INITIALIZE event");
+		GPTP_LOG_DEBUG("Received POWERUP/INITIALIZE event");
 		clock->getTimerQLock();
 
 		{
@@ -518,7 +518,7 @@ void IEEE1588Port::processEvent(Event e)
 
 			if (!automotive_profile) {
 				if (port_state != PTP_SLAVE && port_state != PTP_MASTER) {
-					GPTP_LOG_INFO("Starting PDelay");
+					GPTP_LOG_STATUS("Starting PDelay");
 					startPDelay();
 				}
 			}
@@ -699,7 +699,7 @@ void IEEE1588Port::processEvent(Event e)
 		break;
 
 	case LINKUP:
-		GPTP_LOG_INFO("LINKUP");
+		GPTP_LOG_DEBUG("LINKUP");
 		if (automotive_profile) {
 			asCapable = true;
 
@@ -837,7 +837,7 @@ void IEEE1588Port::processEvent(Event e)
 
 		break;
 	case PDELAY_INTERVAL_TIMEOUT_EXPIRES:
-		GPTP_LOG_INFO("PDELAY_INTERVAL_TIMEOUT_EXPIRES occured");
+		GPTP_LOG_DEBUG("PDELAY_INTERVAL_TIMEOUT_EXPIRES occured");
 		{
 			int ts_good;
 			Timestamp req_timestamp;
@@ -865,7 +865,7 @@ void IEEE1588Port::processEvent(Event e)
 
 			getTxLock();
 			pdelay_req->sendPort(this, NULL);
-			GPTP_LOG_INFO("Sent PDelay Request");
+			GPTP_LOG_DEBUG("Sent PDelay Request");
 
 			ts_good = getTxTimestamp
 				(pdelay_req, req_timestamp, req_timestamp_counter_value, false);
@@ -936,7 +936,7 @@ void IEEE1588Port::processEvent(Event e)
 		}
 		break;
 	case SYNC_INTERVAL_TIMEOUT_EXPIRES:
-		GPTP_LOG_INFO("SYNC_INTERVAL_TIMEOUT_EXPIRES occured");
+		GPTP_LOG_DEBUG("SYNC_INTERVAL_TIMEOUT_EXPIRES occured");
 		{
 			/* Set offset from master to zero, update device vs
 			   system time offset */
@@ -956,7 +956,7 @@ void IEEE1588Port::processEvent(Event e)
 				sync->setPortIdentity(&dest_id);
 				getTxLock();
 				sync->sendPort(this, NULL);
-				GPTP_LOG_INFO("Sent SYNC message");
+				GPTP_LOG_DEBUG("Sent SYNC message");
 
 				if (automotive_profile && testMode && port_state == PTP_MASTER) {
 					if (avbSyncState > 0) {
@@ -1008,13 +1008,13 @@ void IEEE1588Port::processEvent(Event e)
 				}
 
 				if (ts_good == GPTP_EC_SUCCESS) {
-					GPTP_LOG_INFO("Successful Sync timestamp");
-					GPTP_LOG_INFO("Seconds: %u",
+					GPTP_LOG_VERBOSE("Successful Sync timestamp");
+					GPTP_LOG_VERBOSE("Seconds: %u",
 							   sync_timestamp.seconds_ls);
-					GPTP_LOG_INFO("Nanoseconds: %u",
+					GPTP_LOG_VERBOSE("Nanoseconds: %u",
 							   sync_timestamp.nanoseconds);
 				} else {
-					GPTP_LOG_INFO
+					GPTP_LOG_ERROR
 						("*** Unsuccessful Sync timestamp");
 				}
 
@@ -1041,7 +1041,7 @@ void IEEE1588Port::processEvent(Event e)
 			getDeviceTime
 				(system_time, device_time, local_clock, nominal_clock_rate);
 
-			GPTP_LOG_INFO
+			GPTP_LOG_VERBOSE
 				("port::processEvent(): System time: %u,%u Device Time: %u,%u",
 				 system_time.seconds_ls, system_time.nanoseconds,
 				 device_time.seconds_ls, device_time.nanoseconds);
@@ -1106,7 +1106,7 @@ void IEEE1588Port::processEvent(Event e)
 		startAnnounceIntervalTimer(pow((double)2, getAnnounceInterval()) * 1000000000.0);
 		break;
 	case FAULT_DETECTED:
-		GPTP_LOG_INFO("Received FAULT_DETECTED event");
+		GPTP_LOG_ERROR("Received FAULT_DETECTED event");
 		if (!automotive_profile) {
 			setAsCapable(false);
 		}
@@ -1126,24 +1126,24 @@ void IEEE1588Port::processEvent(Event e)
 		break;
 	case PDELAY_RESP_RECEIPT_TIMEOUT_EXPIRES:
 		if (!automotive_profile) {
-			GPTP_LOG_INFO("PDelay Response Receipt Timeout\n");
+			GPTP_LOG_EXCEPTION("PDelay Response Receipt Timeout\n");
 			setAsCapable(false);
 		}
 		pdelay_count = 0;
 		break;
 
 	case PDELAY_RESP_PEER_MISBEHAVING_TIMEOUT_EXPIRES:
-		GPTP_LOG_INFO("PDelay Resp Peer Misbehaving timeout expired! Restarting PDelay");
+		GPTP_LOG_EXCEPTION("PDelay Resp Peer Misbehaving timeout expired! Restarting PDelay");
 
 		haltPdelay(false);
 		if( port_state != PTP_SLAVE && port_state != PTP_MASTER ) {
-			GPTP_LOG_INFO("Starting PDelay\n" );
+			GPTP_LOG_STATUS("Starting PDelay\n" );
 			startPDelay();
 		}
 		break;
 	case SYNC_RATE_INTERVAL_TIMEOUT_EXPIRED:
 		{
-			GPTP_LOG_WARNING("SYNC_RATE_INTERVAL_TIMEOUT_EXPIRES occured");
+			GPTP_LOG_INFO("SYNC_RATE_INTERVAL_TIMEOUT_EXPIRED occured");
 
 			sync_rate_interval_timer_started = false;
 
@@ -1173,7 +1173,7 @@ void IEEE1588Port::processEvent(Event e)
 
 		break;
 	default:
-		GPTP_LOG_INFO
+		GPTP_LOG_ERROR
 		  ("Unhandled event type in IEEE1588Port::processEvent(), %d",
 		   e);
 		break;

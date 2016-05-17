@@ -81,14 +81,14 @@ PTPMessageCommon *buildPTPMessage
 #if PTP_DEBUG
 	{
 		int i;
-		GPTP_LOG_INFO("Packet Dump:\n");
+		GPTP_LOG_VERBOSE("Packet Dump:\n");
 		for (i = 0; i < size; ++i) {
-			GPTP_LOG_INFO("%hhx\t", buf[i]);
+			GPTP_LOG_VERBOSE("%hhx\t", buf[i]);
 			if (i % 8 == 7)
-				GPTP_LOG_INFO("\n");
+				GPTP_LOG_VERBOSE("\n");
 		}
 		if (i % 8 != 0)
-			GPTP_LOG_INFO("\n");
+			GPTP_LOG_VERBOSE("\n");
 	}
 #endif
 
@@ -112,7 +112,7 @@ PTPMessageCommon *buildPTPMessage
 		 sizeof(sequenceId));
 	sequenceId = PLAT_ntohs(sequenceId);
 
-	GPTP_LOG_INFO("Captured Sequence Id: %u", sequenceId);
+	GPTP_LOG_VERBOSE("Captured Sequence Id: %u", sequenceId);
 
 	if (!(messageType >> 3)) {
 		int iter = 5;
@@ -144,22 +144,21 @@ PTPMessageCommon *buildPTPMessage
 		}
 
 		else {
-			GPTP_LOG_INFO("Timestamping event packet");
+			GPTP_LOG_VERBOSE("Timestamping event packet");
 		}
 
 	}
 
 	if (transportSpecific!=1) {
-		GPTP_LOG_INFO("*** Received message with unsupported transportSpecific type=%d",transportSpecific);
+		GPTP_LOG_EXCEPTION("*** Received message with unsupported transportSpecific type=%d",transportSpecific);
 		return NULL;
 	}
 
 	switch (messageType) {
 	case SYNC_MESSAGE:
 
-		//GPTP_LOG_INFO("*** Received Sync message\n" );
-		//GPTP_LOG_INFO("Sync RX timestamp = %hu,%u,%u\n", timestamp.seconds_ms, timestamp.seconds_ls, timestamp.nanoseconds );
-		GPTP_LOG_INFO("*** Received Sync message");
+		GPTP_LOG_DEBUG("*** Received Sync message\n" );
+		GPTP_LOG_VERBOSE("Sync RX timestamp = %hu,%u,%u\n", timestamp.seconds_ms, timestamp.seconds_ls, timestamp.nanoseconds );
 
 		// Be sure buffer is the correction size
 		if (size < PTP_COMMON_HDR_LENGTH + PTP_SYNC_LENGTH) {
@@ -183,7 +182,7 @@ PTPMessageCommon *buildPTPMessage
 		break;
 	case FOLLOWUP_MESSAGE:
 
-		GPTP_LOG_INFO("*** Received Follow Up message");
+		GPTP_LOG_DEBUG("*** Received Follow Up message");
 
 		// Be sure buffer is the correction size
 		if (size < (int)(PTP_COMMON_HDR_LENGTH + PTP_FOLLOWUP_LENGTH + sizeof(FollowUpTLV))) {
@@ -233,7 +232,7 @@ PTPMessageCommon *buildPTPMessage
 		break;
 	case PATH_DELAY_REQ_MESSAGE:
 
-		GPTP_LOG_INFO("*** Received PDelay Request message");
+		GPTP_LOG_DEBUG("*** Received PDelay Request message");
 
 		// Be sure buffer is the correction size
 		if (size < PTP_COMMON_HDR_LENGTH + PTP_PDELAY_REQ_LENGTH
@@ -280,7 +279,7 @@ PTPMessageCommon *buildPTPMessage
 		break;
 	case PATH_DELAY_RESP_MESSAGE:
 
-		GPTP_LOG_INFO("*** Received PDelay Response message, %u, %u, %u",
+		GPTP_LOG_DEBUG("*** Received PDelay Response message, %u, %u, %u",
 			   timestamp.seconds_ls, timestamp.nanoseconds,
 			   sequenceId);
 
@@ -303,7 +302,7 @@ PTPMessageCommon *buildPTPMessage
 
 #ifdef DEBUG
 			for (int n = 0; n < PTP_CLOCK_IDENTITY_LENGTH; ++n) {	// MMM
-				GPTP_LOG_DEBUG("%c",
+				GPTP_LOG_VERBOSE("%c",
 					pdelay_resp_msg->
 					requestingPortIdentity.clockIdentity
 					[n]);
@@ -341,7 +340,7 @@ PTPMessageCommon *buildPTPMessage
 		break;
 	case PATH_DELAY_FOLLOWUP_MESSAGE:
 
-		GPTP_LOG_INFO("*** Received PDelay Response FollowUp message");
+		GPTP_LOG_DEBUG("*** Received PDelay Response FollowUp message");
 
 		// Be sure buffer is the correction size
 //     if( size < PTP_COMMON_HDR_LENGTH + PTP_PDELAY_FOLLOWUP_LENGTH ) {
@@ -483,7 +482,7 @@ PTPMessageCommon *buildPTPMessage
 
 	default:
 
-		GPTP_LOG_ERROR("Received unsupported message type, %d",
+		GPTP_LOG_EXCEPTION("Received unsupported message type, %d",
 		            (int)messageType);
 		port->incCounter_ieee8021AsPortStatRxPTPPacketDiscard();
 
@@ -565,7 +564,7 @@ void PTPMessageCommon::buildCommonHeader(uint8_t * buf)
 	  ((uint16_t *) (buf + PTP_COMMON_HDR_SOURCE_PORT_ID
 			 (PTP_COMMON_HDR_OFFSET)));
 
-	GPTP_LOG_INFO("Sending Sequence Id: %u", sequenceId);
+	GPTP_LOG_VERBOSE("Sending Sequence Id: %u", sequenceId);
 	sequenceId = PLAT_htons(sequenceId);
 	memcpy(buf + PTP_COMMON_HDR_SEQUENCE_ID(PTP_COMMON_HDR_OFFSET),
 	       &sequenceId, sizeof(sequenceId));
@@ -633,14 +632,14 @@ bool PTPMessageAnnounce::isBetterThan(PTPMessageAnnounce * msg)
 	msg->getGrandmasterIdentity((char *)that1 + 6);
 
 #if 0
-	GPTP_LOG_DEBUG("Us: ");
+	GPTP_LOG_VERBOSE("Us: ");
 	for (int i = 0; i < 14; ++i)
-		GPTP_LOG_DEBUG("%hhx", this1[i]);
-	GPTP_LOG_DEBUG("\n");
-	GPTP_LOG_DEBUG("Them: ");
+		GPTP_LOG_VERBOSE("%hhx", this1[i]);
+	GPTP_LOG_VERBOSE("\n");
+	GPTP_LOG_VERBOSE("Them: ");
 	for (int i = 0; i < 14; ++i)
-		GPTP_LOG_DEBUG("%hhx", that1[i]);
-	GPTP_LOG_DEBUG("\n");
+		GPTP_LOG_VERBOSE("%hhx", that1[i]);
+	GPTP_LOG_VERBOSE("\n");
 #endif
 
 	return (memcmp(this1, that1, 14) < 0) ? true : false;
@@ -891,22 +890,22 @@ void PTPMessageFollowUp::sendPort(IEEE1588Port * port,
 	tlv.setGMTimeBaseIndicator(tbi_NO);
 	tlv.toByteString(buf_ptr + PTP_COMMON_HDR_LENGTH + PTP_FOLLOWUP_LENGTH);
 
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 		("Follow-Up Time: %u seconds(hi)", preciseOriginTimestamp.seconds_ms);
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 		("Follow-Up Time: %u seconds", preciseOriginTimestamp.seconds_ls);
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 		("FW-UP Time: %u nanoseconds", preciseOriginTimestamp.nanoseconds);
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 		("FW-UP Time: %x seconds", preciseOriginTimestamp.seconds_ls);
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 		("FW-UP Time: %x nanoseconds", preciseOriginTimestamp.nanoseconds);
 #ifdef DEBUG
-	GPTP_LOG_DEBUG("Follow-up Dump:\n");
+	GPTP_LOG_VERBOSE("Follow-up Dump:\n");
 	for (int i = 0; i < messageLength; ++i) {
-		GPTP_LOG_DEBUG("%d:%02x ", i, (unsigned char)buf_t[i]);
+		GPTP_LOG_VERBOSE("%d:%02x ", i, (unsigned char)buf_t[i]);
 	}
-	GPTP_LOG_DEBUG("\n");
+	GPTP_LOG_VERBOSE("\n");
 #endif
 
 	port->sendGeneralPort(PTP_ETHERTYPE, buf_t, messageLength, MCAST_OTHER, destIdentity);
@@ -933,7 +932,7 @@ void PTPMessageFollowUp::processMessage(IEEE1588Port * port)
 	int32_t scaledLastGmFreqChange = 0;
 	scaledNs scaledLastGmPhaseChange;
 
-	GPTP_LOG_INFO("Processing a follow-up message");
+	GPTP_LOG_DEBUG("Processing a follow-up message");
 
 	// Expire any SYNC_RECEIPT timers that exist
 	port->getClock()->deleteEventTimerLocked
@@ -994,10 +993,10 @@ void PTPMessageFollowUp::processMessage(IEEE1588Port * port)
 	scalar_offset  = TIMESTAMP_TO_NS( sync_arrival );
 	scalar_offset -= TIMESTAMP_TO_NS( preciseOriginTimestamp );
 
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 		("Followup Correction Field: %Ld,%lu", correctionField >> 16,
 		 delay);
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 		("FollowUp Scalar = %lld", scalar_offset);
 
 	/* Otherwise synchronize clock with approximate time from Sync message */
@@ -1006,7 +1005,7 @@ void PTPMessageFollowUp::processMessage(IEEE1588Port * port)
 
 	port->getDeviceTime(system_time, device_time, local_clock,
 			    nominal_clock_rate);
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 		( "Device Time = %llu,System Time = %llu\n",
 		  TIMESTAMP_TO_NS(device_time), TIMESTAMP_TO_NS(system_time));
 
@@ -1014,7 +1013,7 @@ void PTPMessageFollowUp::processMessage(IEEE1588Port * port)
 	device_sync_time_offset =
 	    TIMESTAMP_TO_NS(device_time) - TIMESTAMP_TO_NS(sync_arrival);
 
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 	    ("ptp_message::FollowUp::processMessage System time: %u,%u "
 		 "Device Time: %u,%u",
 	     system_time.seconds_ls, system_time.nanoseconds,
@@ -1121,13 +1120,13 @@ void PTPMessagePathDelayReq::processMessage(IEEE1588Port * port)
 	resp->setPortIdentity(&resp_id);
 	resp->setSequenceId(sequenceId);
 
-	GPTP_LOG_INFO("Process PDelay Request SeqId: %u\t", sequenceId);
+	GPTP_LOG_DEBUG("Process PDelay Request SeqId: %u\t", sequenceId);
 
 #ifdef DEBUG
 	for (int n = 0; n < PTP_CLOCK_IDENTITY_LENGTH; ++n) {
-		GPTP_LOG_DEBUG("%c", resp_id.clockIdentity[n]);
+		GPTP_LOG_VERBOSE("%c", resp_id.clockIdentity[n]);
 	}
-	GPTP_LOG_DEBUG("\"\n");
+	GPTP_LOG_VERBOSE("\"\n");
 #endif
 
 	this->getPortIdentity(&requestingPortIdentity_p);
@@ -1136,13 +1135,13 @@ void PTPMessagePathDelayReq::processMessage(IEEE1588Port * port)
 	port->getTxLock();
 	resp->sendPort(port, sourcePortIdentity);
 
-	GPTP_LOG_INFO("Sent path delay response");
+	GPTP_LOG_DEBUG("Sent path delay response");
 
-	GPTP_LOG_INFO("Start TS Read");
+	GPTP_LOG_VERBOSE("Start TS Read");
 	ts_good = port->getTxTimestamp
 		(resp, resp_timestamp, resp_timestamp_counter_value, false);
 
-	GPTP_LOG_INFO("Done TS Read");
+	GPTP_LOG_VERBOSE("Done TS Read");
 
 	while (ts_good != GPTP_EC_SUCCESS && iter-- != 0) {
 		timer->sleep(req);
@@ -1184,22 +1183,22 @@ void PTPMessagePathDelayReq::processMessage(IEEE1588Port * port)
 	turnaround =
 	    (resp_timestamp.seconds_ls - _timestamp.seconds_ls) * 1000000000LL;
 
-	GPTP_LOG_INFO("Response Depart(sec): %u", resp_timestamp.seconds_ls);
-	GPTP_LOG_INFO("Request Arrival(sec): %u", _timestamp.seconds_ls);
-	GPTP_LOG_INFO("#1 Correction Field: %Ld", turnaround);
+	GPTP_LOG_VERBOSE("Response Depart(sec): %u", resp_timestamp.seconds_ls);
+	GPTP_LOG_VERBOSE("Request Arrival(sec): %u", _timestamp.seconds_ls);
+	GPTP_LOG_VERBOSE("#1 Correction Field: %Ld", turnaround);
 
 	turnaround += resp_timestamp.nanoseconds;
 
-	GPTP_LOG_INFO("#2 Correction Field: %Ld", turnaround);
+	GPTP_LOG_VERBOSE("#2 Correction Field: %Ld", turnaround);
 
 	turnaround -= _timestamp.nanoseconds;
 
-	GPTP_LOG_INFO("#3 Correction Field: %Ld", turnaround);
+	GPTP_LOG_VERBOSE("#3 Correction Field: %Ld", turnaround);
 
 	resp_fwup->setCorrectionField(0);
 	resp_fwup->sendPort(port, sourcePortIdentity);
 
-	GPTP_LOG_INFO("Sent path delay response fwup");
+	GPTP_LOG_DEBUG("Sent path delay response fwup");
 
 	delete resp;
 	delete resp_fwup;
@@ -1366,7 +1365,7 @@ void PTPMessagePathDelayResp::sendPort(IEEE1588Port * port,
 	       &(requestReceiptTimestamp_BE.nanoseconds),
 	       sizeof(requestReceiptTimestamp.nanoseconds));
 
-	GPTP_LOG_INFO("PDelay Resp Timestamp: %u,%u",
+	GPTP_LOG_VERBOSE("PDelay Resp Timestamp: %u,%u",
 		   requestReceiptTimestamp.seconds_ls,
 		   requestReceiptTimestamp.nanoseconds);
 
@@ -1516,9 +1515,9 @@ void PTPMessagePathDelayRespFollowUp::processMessage(IEEE1588Port * port)
 	port->getClock()->deleteEventTimerLocked
 		(port, PDELAY_RESP_RECEIPT_TIMEOUT_EXPIRES);
 
-	GPTP_LOG_INFO("Request Sequence Id: %u", req->getSequenceId());
-	GPTP_LOG_INFO("Response Sequence Id: %u", resp->getSequenceId());
-	GPTP_LOG_INFO("Follow-Up Sequence Id: %u", req->getSequenceId());
+	GPTP_LOG_VERBOSE("Request Sequence Id: %u", req->getSequenceId());
+	GPTP_LOG_VERBOSE("Response Sequence Id: %u", resp->getSequenceId());
+	GPTP_LOG_VERBOSE("Follow-Up Sequence Id: %u", req->getSequenceId());
 
 	int64_t link_delay;
 	unsigned long long turn_around;
@@ -1586,14 +1585,14 @@ void PTPMessagePathDelayRespFollowUp::processMessage(IEEE1588Port * port)
 		turn_around = (int64_t) (turn_around * port->getPeerRateOffset());
 	}
 
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 		("Turn Around Adjustment %Lf",
 		 ((long long)turn_around * port->getPeerRateOffset()) /
 		 1000000000000LL);
-	GPTP_LOG_INFO
+	GPTP_LOG_VERBOSE
 		("Step #1: Turn Around Adjustment %Lf",
 		 ((long long)turn_around * port->getPeerRateOffset()));
-	GPTP_LOG_INFO("Adjusted Peer turn around is %Lu", turn_around);
+	GPTP_LOG_VERBOSE("Adjusted Peer turn around is %Lu", turn_around);
 
 	/* Subtract turn-around time from link delay after rate adjustment */
 	link_delay -= turn_around;
@@ -1680,7 +1679,7 @@ void PTPMessagePathDelayRespFollowUp::sendPort(IEEE1588Port * port,
 		 &(responseOriginTimestamp_BE.nanoseconds),
 		 sizeof(responseOriginTimestamp.nanoseconds));
 
-	GPTP_LOG_INFO("PDelay Resp Timestamp: %u,%u",
+	GPTP_LOG_VERBOSE("PDelay Resp Timestamp: %u,%u",
 		   responseOriginTimestamp.seconds_ls,
 		   responseOriginTimestamp.nanoseconds);
 
@@ -1748,9 +1747,9 @@ void PTPMessageSignalling::processMessage(IEEE1588Port * port)
 {
 	long long unsigned int waitTime;
 
-	GPTP_LOG_VERBOSE("Signalling Link Delay Interval: %d", tlv.getLinkDelayInterval());
-	GPTP_LOG_VERBOSE("Signalling Sync Interval: %d", tlv.getTimeSyncInterval());
-	GPTP_LOG_VERBOSE("Signalling Announce Interval: %d", tlv.getAnnounceInterval());
+	GPTP_LOG_STATUS("Signalling Link Delay Interval: %d", tlv.getLinkDelayInterval());
+	GPTP_LOG_STATUS("Signalling Sync Interval: %d", tlv.getTimeSyncInterval());
+	GPTP_LOG_STATUS("Signalling Announce Interval: %d", tlv.getAnnounceInterval());
 
 	char linkDelayInterval = tlv.getLinkDelayInterval();
 	char timeSyncInterval = tlv.getTimeSyncInterval();
